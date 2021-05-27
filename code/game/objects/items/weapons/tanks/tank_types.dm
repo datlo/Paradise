@@ -32,6 +32,11 @@
 	icon_state = "oxygen_fr"
 	dog_fashion = null
 
+/obj/item/tank/internals/oxygen/syndicate
+	desc = "A tank of oxygen, this one is black."
+	icon_state = "oxygen_syndi"
+	dog_fashion = null
+
 /obj/item/tank/internals/oxygen/empty/populate_gas()
 	return
 
