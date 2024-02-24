@@ -33,6 +33,9 @@
 		return FALSE
 
 	RegisterSignal(owner, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(remove_disguise))
+	RegisterSignal(owner, COMSIG_ATOM_BUMPED, PROC_REF(remove_disguise))
+	RegisterSignal(owner, COMSIG_MOVABLE_BUMP, PROC_REF(remove_disguise))
+	RegisterSignal(owner, COMSIG_HUMAN_ATTACKED, PROC_REF(remove_disguise))
 
 /datum/status_effect/magic_disguise/on_remove()
 	owner.regenerate_icons()
@@ -77,7 +80,7 @@
 	to_chat(H, "<span class='notice'>You disguise yourself as [disguise.name].</span>")
 
 /datum/status_effect/magic_disguise/proc/remove_disguise()
-	SIGNAL_HANDLER  // COMSIG_MOB_APPLY_DAMAGE
+	SIGNAL_HANDLER
 	if(!ishuman(owner))
 		return
 	var/mob/living/carbon/human/H = owner
