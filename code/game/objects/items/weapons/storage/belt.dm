@@ -52,7 +52,7 @@
 		belt_image.color = I.color
 		. += belt_image
 
-/obj/item/storage/belt/handle_item_insertion(obj/item/I, prevent_warning)
+/obj/item/storage/belt/handle_item_insertion(obj/item/I, mob/user, prevent_warning)
 	. = ..()
 	update_weight()
 
@@ -61,17 +61,17 @@
 
 /obj/item/storage/belt/MouseDrop(obj/over_object, src_location, over_location)
 	var/mob/M = usr
-	if(!istype(over_object, /obj/screen))
+	if(!is_screen_atom(over_object))
 		return ..()
 	playsound(loc, "rustle", 50, TRUE, -5)
 	if(!M.restrained() && !M.stat && can_use())
 		switch(over_object.name)
 			if("r_hand")
-				M.unEquip(src, silent = TRUE)
-				M.put_in_r_hand(src)
+				if(M.unEquip(src, silent = TRUE))
+					M.put_in_r_hand(src)
 			if("l_hand")
-				M.unEquip(src, silent = TRUE)
-				M.put_in_l_hand(src)
+				if(M.unEquip(src, silent = TRUE))
+					M.put_in_l_hand(src)
 		add_fingerprint(usr)
 		return
 
@@ -148,7 +148,8 @@
 	update_icon()
 	//much roomier now that we've managed to remove two tools
 
-/obj/item/storage/belt/utility/syndi_researcher // A cool looking belt thats essentially a syndicate toolbox
+/// A cool looking belt thats essentially a syndicate toolbox
+/obj/item/storage/belt/utility/syndi_researcher
 	desc = "A belt for holding tools, but with style."
 	icon_state = "assaultbelt"
 	item_state = "assault"
@@ -161,6 +162,21 @@
 	new /obj/item/wirecutters(src, "red")
 	new /obj/item/multitool/red(src)
 	new /obj/item/stack/cable_coil(src, 30, COLOR_RED)
+	update_icon()
+
+/obj/item/storage/belt/utility/expedition
+	desc = "A belt for holding tools, but with style."
+	icon_state = "assaultbelt"
+	item_state = "assault"
+
+/obj/item/storage/belt/utility/expedition/populate_contents()
+	new /obj/item/screwdriver(src, "blue")
+	new /obj/item/wrench(src)
+	new /obj/item/weldingtool/hugetank(src)
+	new /obj/item/crowbar(src)
+	new /obj/item/wirecutters(src)
+	new /obj/item/multitool(src)
+	new /obj/item/stack/cable_coil(src, 30, COLOR_BLUE)
 	update_icon()
 
 /obj/item/storage/belt/medical
@@ -193,7 +209,8 @@
 		/obj/item/wrench/medical,
 		/obj/item/handheld_defibrillator,
 		/obj/item/reagent_containers/applicator,
-		/obj/item/geiger_counter
+		/obj/item/geiger_counter,
+		/obj/item/organ_extractor
 	)
 
 /obj/item/storage/belt/medical/surgery
@@ -286,6 +303,7 @@
 		/obj/item/melee/classic_baton,
 		/obj/item/flashlight/seclite,
 		/obj/item/holosign_creator/security,
+		/obj/item/holosign_creator/detective,
 		/obj/item/melee/classic_baton/telescopic,
 		/obj/item/restraints/legcuffs/bola,
 		/obj/item/clothing/mask/gas/sechailer,
@@ -438,7 +456,8 @@
 	new /obj/item/grenade/chem_grenade/facid(src) //1
 	new /obj/item/grenade/chem_grenade/saringas(src) //1
 
-/obj/item/storage/belt/grenade/tactical // Traitor bundle version
+/// Traitor bundle version
+/obj/item/storage/belt/grenade/tactical
 	name = "tactical grenadier belt"
 	storage_slots = 20 // Not as many slots as the nukie one
 	max_combined_w_class = 40
@@ -452,22 +471,6 @@
 		new /obj/item/grenade/frag(src)
 		new /obj/item/grenade/empgrenade(src) // Two of each
 	new /obj/item/grenade/syndieminibomb(src) // One minibomb
-
-/obj/item/storage/belt/military/abductor
-	name = "agent belt"
-	desc = "A belt used by abductor agents."
-	icon = 'icons/obj/abductor.dmi'
-	icon_state = "belt"
-	item_state = "security"
-
-/obj/item/storage/belt/military/abductor/full/populate_contents()
-	new /obj/item/screwdriver/abductor(src)
-	new /obj/item/wrench/abductor(src)
-	new /obj/item/weldingtool/abductor(src)
-	new /obj/item/crowbar/abductor(src)
-	new /obj/item/wirecutters/abductor(src)
-	new /obj/item/multitool/abductor(src)
-	new /obj/item/stack/cable_coil(src, 30, COLOR_WHITE)
 
 /obj/item/storage/belt/military/assault
 	name = "assault belt"
@@ -501,6 +504,25 @@
 	new /obj/item/grenade/plastic/c4/thermite(src)
 	new /obj/item/grenade/plastic/c4/thermite(src)
 	update_icon()
+
+/obj/item/storage/belt/viper
+	name = "utility belt"
+	desc = "Holds smokebombs, bolas, and knives. Excellent for sneaking around."
+	icon_state = "securitybelt"
+	item_state = "security"
+	max_w_class = WEIGHT_CLASS_NORMAL
+	max_combined_w_class = 18
+	can_hold = list(
+		/obj/item/grenade/smokebomb,
+		/obj/item/restraints/legcuffs/bola,
+		/obj/item/kitchen/knife/combat
+	)
+
+/obj/item/storage/belt/viper/populate_contents()
+	for(var/I in 1 to 5)
+		new /obj/item/grenade/smokebomb(src)
+	new /obj/item/restraints/legcuffs/bola(src)
+	new /obj/item/restraints/legcuffs/bola(src)
 
 /obj/item/storage/belt/janitor
 	name = "janibelt"
@@ -588,6 +610,7 @@
 	..()
 	if(amount != length(contents))
 		update_icon()
+		orient2hud(user)  // Update the displayed items and their counts
 
 /obj/item/storage/belt/holster
 	name = "shoulder holster"
@@ -730,7 +753,7 @@
 	else
 		to_chat(user, "<span class='warning'>[src] is empty!</span>")
 
-/obj/item/storage/belt/rapier/handle_item_insertion(obj/item/W, prevent_warning)
+/obj/item/storage/belt/rapier/handle_item_insertion(obj/item/W, mob/user, prevent_warning)
 	if(!..())
 		return
 	playsound(src, 'sound/weapons/blade_sheath.ogg', 20)
