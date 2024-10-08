@@ -57,7 +57,6 @@
 	gloves = /obj/item/clothing/gloves/combat
 	l_ear = /obj/item/radio/headset
 	mask = /obj/item/clothing/mask/gas/syndicate
-	back = /obj/item/mod/control/pre_equipped/traitor_elite
 	r_pocket = /obj/item/tank/internals/emergency_oxygen
 	id = /obj/item/card/id
 
@@ -120,7 +119,7 @@
 	name = "Corpse of a Space Wizard"
 	outfit = /datum/outfit/wizardcorpse
 
-/obj/effect/mob_spawn/human/corpse/clown/officer/Initialize(mapload)
+/obj/effect/mob_spawn/human/corpse/wizard/officer/Initialize(mapload)
 	mob_name = "[pick(GLOB.wizard_first)], [pick(GLOB.wizard_second)]"
 	. = ..()
 

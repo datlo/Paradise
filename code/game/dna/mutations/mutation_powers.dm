@@ -209,19 +209,29 @@
 	..()
 	block = GLOB.shadowblock
 
+/datum/mutation/stealth/darkcloak/deactivate(mob/living/M)
+	..()
+	if(ishuman(M))
+		var/mob/living/carbon/human/H = M
+		H.set_alpha_tracking(ALPHA_VISIBLE, src)
+	if(!ishuman(M))
+		return
+	var/mob/living/carbon/human/H = M
+	H.set_alpha_tracking(ALPHA_VISIBLE, src)
 /datum/mutation/stealth/darkcloak/on_life(mob/M)
 	var/turf/simulated/T = get_turf(M)
-	if(!istype(T))
+	if(!istype(T) || !ishuman(M))
 		return
+	var/mob/living/carbon/human/H = M
 	var/light_available = T.get_lumcount() * 10
 	if(light_available <= 2)
-		if(M.invisibility != INVISIBILITY_LEVEL_TWO)
-			M.alpha = round(M.alpha * 0.8)
+		if(H.invisibility != INVISIBILITY_LEVEL_TWO)
+			H.set_alpha_tracking(H.get_alpha() * 0.8, src)
 	else
-		M.reset_visibility()
-		M.alpha = round(255 * 0.8)
-	if(M.alpha == 0)
-		M.make_invisible()
+		H.reset_visibility()
+		H.set_alpha_tracking(ALPHA_VISIBLE * 0.8, src)
+	if(H.get_alpha(src) == 0)
+		H.make_invisible()
 
 //WAS: /datum/bioEffect/chameleon
 /datum/mutation/stealth/chameleon
@@ -234,15 +244,24 @@
 	..()
 	block = GLOB.chameleonblock
 
-/datum/mutation/stealth/chameleon/on_life(mob/living/M) //look if a ghost gets this, its an admins problem
-	if((world.time - M.last_movement) >= 30 && !M.stat && (M.mobility_flags & MOBILITY_STAND) && !M.restrained())
-		if(M.invisibility != INVISIBILITY_LEVEL_TWO)
-			M.alpha -= 25
+/datum/mutation/stealth/chameleon/deactivate(mob/living/M)
+	..()
+	if(ishuman(M))
+		var/mob/living/carbon/human/H = M
+		H.set_alpha_tracking(ALPHA_VISIBLE, src)
+
+/datum/mutation/stealth/chameleon/on_life(mob/living/M)
+	if(!ishuman(M))
+		return
+	var/mob/living/carbon/human/H = M
+	if((world.time - H.last_movement) >= 30 && !H.stat && (H.mobility_flags & MOBILITY_STAND) && !H.restrained())
+		if(H.invisibility != INVISIBILITY_LEVEL_TWO)
+			H.set_alpha_tracking(H.get_alpha() - 25, src)
 	else
-		M.reset_visibility()
-		M.alpha = round(255 * 0.80)
-	if(M.alpha == 0)
-		M.make_invisible()
+		H.reset_visibility()
+		H.set_alpha_tracking(ALPHA_VISIBLE * 0.8, src)
+	if(H.get_alpha(src) == 0)
+		H.make_invisible()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -509,7 +528,7 @@
 		if(user.restrained())//Why being pulled while cuffed prevents you from moving
 			for(var/mob/living/M in range(user, 1))
 				if(M.pulling == user)
-					if(!M.restrained() && M.stat == 0 && !(M.mobility_flags & MOBILITY_STAND) && user.Adjacent(M))
+					if(!M.restrained() && M.stat == CONSCIOUS && !(M.mobility_flags & MOBILITY_STAND) && user.Adjacent(M))
 						failure = TRUE
 					else
 						M.stop_pulling()
@@ -685,7 +704,7 @@
 			to_chat(user, "<span class='warning'>You can't see into [M.name]'s mind at all!</span>")
 			return
 
-		if(M.stat == 2)
+		if(M.stat == DEAD)
 			to_chat(user, "<span class='warning'>[M.name] is dead and cannot have [M.p_their()] mind read.</span>")
 			return
 		if(M.health < 0)

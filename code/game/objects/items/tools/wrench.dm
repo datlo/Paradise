@@ -88,6 +88,7 @@
 	throwforce = 4
 	origin_tech = "materials=1;engineering=1;biotech=3"
 	attack_verb = list("wrenched", "medicaled", "tapped", "jabbed", "whacked")
+	toolspeed = 0.75
 
 /obj/item/wrench/medical/suicide_act(mob/living/user)
 	user.visible_message("<span class='suicide'>[user] is praying to the medical wrench to take [user.p_their()] soul. It looks like [user.p_theyre()] trying to commit suicide!</span>")
@@ -107,7 +108,7 @@
 
 	// Immobilize stops them from wandering off and dropping the wrench
 	user.Immobilize(10 SECONDS)
-	playsound(loc, 'sound/effects/pray.ogg', 50, 1, -1)
+	playsound(loc, 'sound/effects/pray.ogg', 50, TRUE, -1)
 
 	// Let the sound effect finish playing
 	sleep(20)

@@ -130,7 +130,7 @@
 	var/turf/center = locate((destination.x + xoffset), (destination.y + yoffset), location.z) // So now, find the new center.
 
 	// Now to find a box from center location and make that our destination.
-	for(var/turf/T in block(locate(center.x + b1xerror, center.y + b1yerror, location.z), locate(center.x + b2xerror, center.y + b2yerror, location.z)))
+	for(var/turf/T in block(center.x + b1xerror, center.y + b1yerror, location.z, center.x + b2xerror, center.y + b2yerror, location.z))
 		if(density && T.density)
 			continue
 		if(T.x > world.maxx || T.x < 1 || T.y > world.maxy || T.y < 1)
@@ -1037,19 +1037,25 @@ Returns 1 if the chain up to the area contains the given typepath
 
 
 /proc/parse_zone(zone)
-	if(zone == "r_hand") return "right hand"
-	else if(zone == "l_hand") return "left hand"
-	else if(zone == "l_arm") return "left arm"
-	else if(zone == "r_arm") return "right arm"
-	else if(zone == "l_leg") return "left leg"
-	else if(zone == "r_leg") return "right leg"
-	else if(zone == "l_foot") return "left foot"
-	else if(zone == "r_foot") return "right foot"
-	else if(zone == "l_hand") return "left hand"
-	else if(zone == "r_hand") return "right hand"
-	else if(zone == "l_foot") return "left foot"
-	else if(zone == "r_foot") return "right foot"
-	else return zone
+	switch(zone)
+		if("r_hand")
+			return "right hand"
+		if("l_hand")
+			return "left hand"
+		if("r_arm")
+			return "right arm"
+		if("l_arm")
+			return "left arm"
+		if("r_foot")
+			return "right foot"
+		if("l_foot")
+			return "left foot"
+		if("r_leg")
+			return "right leg"
+		if("l_leg")
+			return "left leg"
+		else
+			return zone
 
 /*
 
@@ -1135,41 +1141,23 @@ Checks if that loc and dir has a item on the wall
 */
 GLOBAL_LIST_INIT(wall_items, typecacheof(list(/obj/machinery/power/apc, /obj/machinery/alarm,
 	/obj/item/radio/intercom, /obj/structure/extinguisher_cabinet, /obj/structure/reagent_dispensers/peppertank,
-	/obj/machinery/status_display, /obj/machinery/requests_console, /obj/machinery/light_switch, /obj/structure/sign,
+	/obj/machinery/status_display, /obj/machinery/requests_console, /obj/structure/sign,
 	/obj/machinery/newscaster, /obj/machinery/firealarm, /obj/structure/noticeboard, /obj/machinery/door_control,
 	/obj/machinery/computer/security/telescreen, /obj/machinery/airlock_controller,
 	/obj/item/storage/secure/safe, /obj/machinery/door_timer, /obj/machinery/flasher, /obj/machinery/keycard_auth,
 	/obj/structure/mirror, /obj/structure/closet/fireaxecabinet, /obj/machinery/computer/security/telescreen/entertainment,
-	/obj/structure/sign, /obj/machinery/barsign)))
+	/obj/structure/sign, /obj/machinery/barsign, /obj/machinery/light, /obj/machinery/light_construct)))
 
 /proc/gotwallitem(loc, dir)
 	for(var/obj/O in loc)
-		if(is_type_in_typecache(O, GLOB.wall_items))
-			//Direction works sometimes
-			if(O.dir == dir)
-				return 1
+		if(is_type_in_typecache(O, GLOB.wall_items) && dir == O.dir)
+			return TRUE
 
-			//Some stuff doesn't use dir properly, so we need to check pixel instead
-			switch(dir)
-				if(SOUTH)
-					if(O.pixel_y > 10)
-						return 1
-				if(NORTH)
-					if(O.pixel_y < -10)
-						return 1
-				if(WEST)
-					if(O.pixel_x > 10)
-						return 1
-				if(EAST)
-					if(O.pixel_x < -10)
-						return 1
-
-	//Some stuff is placed directly on the wallturf (signs)
+	// Some stuff is placed directly on the wallturf (signs)
 	for(var/obj/O in get_step(loc, dir))
 		if(is_type_in_typecache(O, GLOB.wall_items))
-			if(abs(O.pixel_x) <= 10 && abs(O.pixel_y) <= 10)
-				return 1
-	return 0
+			return TRUE
+	return FALSE
 
 /proc/atan2(x, y)
 	if(!x && !y) return 0
@@ -1901,20 +1889,6 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 	LAZYSET(modifiers, "icon-y", "[(click_turf_py - click_turf.pixel_y) + ((click_turf_y - click_turf.y) * world.icon_size)]")
 	return click_turf
 
-/proc/params2turf(scr_loc, turf/origin, client/C)
-	if(!scr_loc)
-		return null
-	var/tX = splittext(scr_loc, ",")
-	var/tY = splittext(tX[2], ":")
-	var/tZ = origin.z
-	tY = tY[1]
-	tX = splittext(tX[1], ":")
-	tX = tX[1]
-	var/list/actual_view = getviewsize(C ? C.view : world.view)
-	tX = clamp(origin.x + text2num(tX) - round(actual_view[1] / 2) - 1, 1, world.maxx)
-	tY = clamp(origin.y + text2num(tY) - round(actual_view[2] / 2) - 1, 1, world.maxy)
-	return locate(tX, tY, tZ)
-
 /proc/CallAsync(datum/source, proctype, list/arguments)
 	set waitfor = FALSE
 	return call(source, proctype)(arglist(arguments))
@@ -1935,9 +1909,9 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 
 /proc/log_connection(ckey, ip, cid, connection_type)
 	ASSERT(connection_type in list(CONNECTION_TYPE_ESTABLISHED, CONNECTION_TYPE_DROPPED_IPINTEL, CONNECTION_TYPE_DROPPED_BANNED, CONNECTION_TYPE_DROPPED_INVALID))
-	var/datum/db_query/query_accesslog = SSdbcore.NewQuery("INSERT INTO connection_log (`datetime`, `ckey`, `ip`, `computerid`, `result`, `server_id`) VALUES(Now(), :ckey, :ip, :cid, :result, :server_id)", list(
+	var/datum/db_query/query_accesslog = SSdbcore.NewQuery("INSERT INTO connection_log (`datetime`, `ckey`, `ip`, `computerid`, `result`, `server_id`) VALUES(Now(), :ckey, INET_ATON(:ip), :cid, :result, :server_id)", list(
 		"ckey" = ckey,
-		"ip" = "[ip ? ip : ""]", // This is important. NULL is not the same as "", and if you directly open the `.dmb` file, you get a NULL IP.
+		"ip" = "[ip ? ip : "127.0.0.1"]",
 		"cid" = cid,
 		"result" = connection_type,
 		"server_id" = GLOB.configuration.system.instance_id
@@ -1979,6 +1953,8 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 			return "Radio Noise"
 		if(CHANNEL_BOSS_MUSIC)
 			return "Boss Music"
+		if(CHANNEL_SURGERY_SOUNDS)
+			return "Surgery Sounds"
 
 /proc/slot_bitfield_to_slot(input_slot_flags) // Kill off this garbage ASAP; slot flags and clothing flags should be IDENTICAL. GOSH DARN IT. Doesn't work with ears or pockets, either.
 	switch(input_slot_flags)

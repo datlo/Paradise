@@ -807,7 +807,7 @@
 	if(!src.xylophone)
 		visible_message("<span class='warning'>[src] begins playing [p_their()] ribcage like a xylophone. It's quite spooky.</span>","<span class='notice'>You begin to play a spooky refrain on your ribcage.</span>","<span class='warning'>You hear a spooky xylophone melody.</span>")
 		var/song = pick('sound/effects/xylophone1.ogg','sound/effects/xylophone2.ogg','sound/effects/xylophone3.ogg')
-		playsound(loc, song, 50, 1, -1)
+		playsound(loc, song, 50, TRUE, -1)
 		xylophone = 1
 		spawn(1200)
 			xylophone=0
@@ -991,20 +991,11 @@
 		affected.custom_pain("You feel a stabbing pain in your chest!")
 		L.linked_organ.damage = L.linked_organ.min_bruised_damage
 
-/mob/living/carbon/human/cuff_resist(obj/item/I)
+/mob/living/carbon/human/resist_restraints(attempt_breaking)
 	if(HAS_TRAIT(src, TRAIT_HULK))
 		say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
-		if(..(I, cuff_break = 1))
-			unEquip(I)
-	else
-		if(..())
-			unEquip(I)
-
-/mob/living/carbon/human/resist_restraints()
-	if(wear_suit && wear_suit.breakouttime)
-		cuff_resist(wear_suit)
-	else
-		..()
+		attempt_breaking = TRUE
+	return ..()
 
 /mob/living/carbon/human/generate_name()
 	name = dna.species.get_random_name(gender)
@@ -1013,16 +1004,16 @@
 		dna.real_name = name
 	return name
 
-/mob/living/carbon/human/proc/change_dna(datum/dna/new_dna, include_species_change = FALSE, keep_flavor_text = FALSE)
+/mob/living/carbon/human/proc/change_dna(datum/dna/new_dna, include_species_change = FALSE)
 	if(include_species_change)
 		set_species(new_dna.species.type, retain_damage = TRUE, transformation = TRUE, keep_missing_bodyparts = TRUE)
 	dna = new_dna.Clone()
 	if(include_species_change) //We have to call this after new_dna.Clone() so that species actions don't get overwritten
 		dna.species.on_species_gain(src)
 	real_name = new_dna.real_name
+	if(dna.flavor_text)
+		flavor_text = dna.flavor_text
 	domutcheck(src, MUTCHK_FORCED) //Ensures species that get powers by the species proc handle_dna keep them
-	if(!keep_flavor_text)
-		flavor_text = ""
 	dna.UpdateSE()
 	dna.UpdateUI()
 	sync_organ_dna(TRUE)
@@ -1290,7 +1281,7 @@
 	if(incapacitated())
 		to_chat(src, "<span class='warning'>You can't write on the floor in your current state!</span>")
 		return
-	if(!bloody_hands)
+	if(bloody_hands <= 1)
 		remove_verb(src, /mob/living/carbon/human/proc/bloody_doodle)
 
 	if(gloves)
@@ -1319,7 +1310,7 @@
 		to_chat(src, "<span class='warning'>There is no space to write on!</span>")
 		return
 
-	var/max_length = bloody_hands * 30 //tweeter style
+	var/max_length = (bloody_hands - 1) * 30 //tweeter style
 
 	var/message = tgui_input_text(src, "Write a message. It cannot be longer than [max_length] characters.", "Blood writing", max_length = max_length)
 	if(origin != loc)
@@ -1327,7 +1318,7 @@
 		return
 	if(message)
 		var/used_blood_amount = round(length(message) / 30, 1)
-		bloody_hands = max(0, bloody_hands - used_blood_amount) //use up some blood
+		bloody_hands = max(1, bloody_hands - used_blood_amount) //use up some blood
 
 		if(length(message) > max_length)
 			message += "-"
@@ -1466,7 +1457,7 @@ Eyes need to have significantly high darksight to shine unless the mob has the X
 	rad_act(current_size * 3)
 
 /mob/living/carbon/human/narsie_act()
-	if(iswizard(src) && IS_CULTIST(src)) //Wizard cultists are immune to narsie because it would prematurely end the wiz round that's about to end by the automated shuttle call anyway
+	if(iswizard(src) || IS_CULTIST(src)) // Wizards are immune to the magic. Cultists also don't get transformed.
 		return
 	..()
 
@@ -1616,12 +1607,6 @@ Eyes need to have significantly high darksight to shine unless the mob has the X
 #undef CPR_RESCUE_BREATHS
 #undef CPR_CHEST_COMPRESSION_RESTORATION
 #undef CPR_BREATHS_RESTORATION
-
-/mob/living/carbon/human/canBeHandcuffed()
-	if(get_num_arms() >= 2)
-		return TRUE
-	else
-		return FALSE
 
 /mob/living/carbon/human/has_mutated_organs()
 	for(var/obj/item/organ/external/E in bodyparts)
@@ -1932,16 +1917,6 @@ Eyes need to have significantly high darksight to shine unless the mob has the X
 		return
 	..()
 
-/**
-  * Helper to get the mobs runechat colour span
-  *
-  * Basically just a quick redirect to the DNA handler that gets the species-specific colour handler
-  */
-/mob/living/carbon/human/get_runechat_color()
-	if(client?.prefs.toggles2 & PREFTOGGLE_2_FORCE_WHITE_RUNECHAT)
-		return "#FFFFFF" // Force white if they want it
-	return dna.species.get_species_runechat_color(src)
-
 /mob/living/carbon/human/update_runechat_msg_location()
 	if(ismecha(loc))
 		runechat_msg_location = loc.UID()
@@ -2059,3 +2034,30 @@ Eyes need to have significantly high darksight to shine unless the mob has the X
 	dna.ResetUIFrom(src)
 	flavor_text = ""
 
+/**
+ * Helper for tracking alpha, use this to set an alpha source
+ *
+ * alpha_num - num between 0 and 255 that represents the alpha from `source`
+ * source - a datum that is the cause of the alpha source. This will be turned into a key via UID.
+ * update_alpha - boolean if alpha should be updated with this proc. Set this to false if you plan to animate the alpha after this call.
+ */
+/mob/living/carbon/human/proc/set_alpha_tracking(alpha_num, datum/source, update_alpha = TRUE)
+	alpha_num = round(alpha_num)
+	if(alpha_num >= ALPHA_VISIBLE)
+		LAZYREMOVE(alpha_sources, source.UID())
+	else
+		LAZYSET(alpha_sources, source.UID(), max(alpha_num, 0))
+	if(update_alpha)
+		alpha = get_alpha()
+
+/**
+ * Gets the target alpha of the human
+ *
+ * optional_source - use this to get the alpha of an exact source. This is unsafe, only use if you 100% know it will be in the list. For the best safety, only call this as get_alpha(src)
+ */
+/mob/living/carbon/human/proc/get_alpha(datum/optional_source)
+	if(optional_source)
+		return alpha_sources[optional_source.UID()]
+	. = ALPHA_VISIBLE
+	for(var/source in alpha_sources)
+		. = min(., alpha_sources[source])

@@ -20,6 +20,7 @@
 #define MAGIC		"magic"
 
 #define STUN		"stun"
+#define STAM_CRIT   "stam_crit"
 #define WEAKEN		"weaken"
 #define KNOCKDOWN	"knockdown"
 #define PARALYZE	"paralize"
@@ -52,6 +53,7 @@
 
 //Health Defines
 #define HEALTH_THRESHOLD_CRIT 0
+#define HEALTH_THRESHOLD_SUCCUMB -30
 #define HEALTH_THRESHOLD_KNOCKOUT -50
 #define HEALTH_THRESHOLD_DEAD -100
 

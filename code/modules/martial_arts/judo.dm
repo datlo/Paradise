@@ -27,7 +27,7 @@
 		/obj/item/reagent_containers/spray/pepper,
 		/obj/item/restraints/handcuffs,
 		/obj/item/flash,
-		/obj/item/food/snacks/donut,
+		/obj/item/food/donut,
 		/obj/item/flashlight/seclite,
 		/obj/item/holosign_creator/security,
 		/obj/item/holosign_creator/detective,
@@ -74,11 +74,6 @@
 					"<span class='userdanger'>[A] [picked_hit_type] you!</span>")
 	add_attack_logs(A, D, "Melee attacked with [src]")
 	return TRUE
-
-/datum/martial_art/judo/grab_act(mob/living/carbon/human/attacker, mob/living/carbon/human/defender)
-	if(IS_HORIZONTAL(attacker))
-		return FALSE
-	return ..()
 
 /datum/martial_art/judo/explaination_header(user)
 	to_chat(user, "<b><i>You recall the teachings of Corporate Judo.</i></b>")

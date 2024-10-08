@@ -249,6 +249,7 @@
 /// A status effect that can have a certain amount of "bonus" duration added, which extends the duration every tick,
 /// although there is a maximum amount of bonus time that can be active at any given time.
 /datum/status_effect/limited_bonus
+	id = "limited_bonus"
 	/// How much extra time has been added
 	var/bonus_time = 0
 	/// How much extra time to apply per tick
@@ -366,14 +367,12 @@
 	expire_proc.Invoke()
 
 /datum/status_effect/action_status_effect
+	id = "action_status_effect"
 	alert_type = null
 	tick_interval = -1
 
 /datum/status_effect/action_status_effect/remove_handcuffs
 	id = "remove_handcuffs"
-
-/datum/status_effect/action_status_effect/break_handcuffs
-	id = "break_handcuffs"
 
 /datum/status_effect/action_status_effect/remove_muzzle
 	id = "remove_muzzle"

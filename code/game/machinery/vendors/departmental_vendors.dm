@@ -208,6 +208,7 @@
 					/obj/item/seeds/orange = 3,
 					/obj/item/seeds/peanuts = 3,
 					/obj/item/seeds/pineapple = 3,
+					/obj/item/seeds/plum = 3,
 					/obj/item/seeds/poppy = 3,
 					/obj/item/seeds/potato = 3,
 					/obj/item/seeds/pumpkin = 3,
@@ -288,7 +289,7 @@
 	contraband = list(/obj/item/reagent_containers/syringe/insulin = 4,
 					/obj/item/reagent_containers/glass/bottle/sulfonal = 1,
 					/obj/item/reagent_containers/glass/bottle/pancuronium = 1,
-					/obj/item/food/snacks/candy/sucker = 2)
+					/obj/item/food/candy/sucker = 2)
 
 	armor = list(MELEE = 50, BULLET = 20, LASER = 20, ENERGY = 20, BOMB = 0, RAD = 0, FIRE = 100, ACID = 70)
 	resistance_flags = FIRE_PROOF
@@ -336,7 +337,7 @@
 					/obj/item/grenade/flashbang = 4,
 					/obj/item/flash = 5,
 					/obj/item/reagent_containers/spray/pepper = 5,
-					/obj/item/food/snacks/donut = 12,
+					/obj/item/food/donut = 12,
 					/obj/item/storage/box/evidence = 6,
 					/obj/item/flashlight/seclite = 4,
 					/obj/item/restraints/legcuffs/bola/energy = 7,
@@ -348,5 +349,5 @@
 					/obj/item/hailer = 5)
 
 	refill_canister = /obj/item/vending_refill/security
-	prices = list(/obj/item/food/snacks/donut = 40,
+	prices = list(/obj/item/food/donut = 40,
 				/obj/item/storage/fancy/donut_box = 200) //Bulk discount
