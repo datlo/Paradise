@@ -126,7 +126,7 @@
 	/obj/item/camera_film,
 	/obj/item/camera_film,
 	/obj/item/storage/photo_album,
-	/obj/item/stack/packageWrap,
+	/obj/item/stack/package_wrap,
 	/obj/item/reagent_containers/glass/paint/red,
 	/obj/item/reagent_containers/glass/paint/green,
 	/obj/item/reagent_containers/glass/paint/blue,
@@ -331,7 +331,7 @@
 					/obj/item/clothing/head/collectable/rabbitears,
 					/obj/item/clothing/head/collectable/wizard,
 					/obj/item/clothing/head/collectable/hardhat,
-					/obj/item/clothing/head/collectable/HoS,
+					/obj/item/clothing/head/collectable/hos,
 					/obj/item/clothing/head/collectable/thunderdome,
 					/obj/item/clothing/head/collectable/swat,
 					/obj/item/clothing/head/collectable/slime,
@@ -351,7 +351,11 @@
 	name = "Collectable Plushies Crate"
 	cost = 1000
 	containername = "collectable plushies crate! Brought to you by Bass.inc!"
-	contains = list(/obj/random/plushie, /obj/random/plushie, /obj/random/plushie/explosive)
+	contains = list(
+		/obj/effect/spawner/random/plushies,
+		/obj/effect/spawner/random/plushies,
+		/obj/effect/spawner/random/plushies/explosive,
+	)
 
 /datum/supply_packs/misc/foamforce
 	name = "Foam Force Crate"

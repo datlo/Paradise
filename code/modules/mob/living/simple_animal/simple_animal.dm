@@ -194,7 +194,7 @@
 		return
 
 	/*
-	*  String associated list returns a cached list. 
+	*  String associated list returns a cached list.
 	*  This is like a static list to pass into the element below.
 	*/
 	atmos_requirements = string_assoc_list(atmos_requirements)
@@ -354,7 +354,8 @@
 	icon = initial(icon)
 	icon_state = icon_living
 	density = initial(density)
-	flying = initial(flying)
+	if(TRAIT_FLYING in initial_traits)
+		ADD_TRAIT(src, TRAIT_FLYING, INNATE_TRAIT)
 	if(collar_type)
 		collar_type = "[initial(collar_type)]"
 		regenerate_icons()
@@ -364,7 +365,7 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	flying = FALSE
+	REMOVE_TRAIT(src, TRAIT_FLYING, INNATE_TRAIT)
 	walk(src, 0)
 	if(nest)
 		nest.spawned_mobs -= src
@@ -473,14 +474,14 @@
 
 /mob/living/simple_animal/get_item_by_slot(slot_id)
 	switch(slot_id)
-		if(SLOT_HUD_COLLAR)
+		if(ITEM_SLOT_COLLAR)
 			return pcollar
 	. = ..()
 
 /mob/living/simple_animal/can_equip(obj/item/I, slot, disable_warning = 0)
 	// . = ..() // Do not call parent. We do not want animals using their hand slots.
 	switch(slot)
-		if(SLOT_HUD_COLLAR)
+		if(ITEM_SLOT_COLLAR)
 			if(pcollar)
 				return FALSE
 			if(!can_collar)
@@ -500,7 +501,7 @@
 	W.plane = ABOVE_HUD_PLANE
 
 	switch(slot)
-		if(SLOT_HUD_COLLAR)
+		if(ITEM_SLOT_COLLAR)
 			add_collar(W)
 
 /mob/living/simple_animal/unEquip(obj/item/I, force, silent = FALSE)
@@ -582,10 +583,10 @@
 	if(pulledby || shouldwakeup)
 		toggle_ai(AI_ON)
 
-/mob/living/simple_animal/onTransitZ(old_z, new_z)
+/mob/living/simple_animal/on_changed_z_level(turf/old_turf, turf/new_turf)
 	..()
-	if(AIStatus == AI_Z_OFF)
-		var/list/idle_mobs_on_old_z = LAZYACCESS(SSidlenpcpool.idle_mobs_by_zlevel, old_z)
+	if(AIStatus == AI_Z_OFF && old_turf)
+		var/list/idle_mobs_on_old_z = LAZYACCESS(SSidlenpcpool.idle_mobs_by_zlevel, old_turf.z)
 		LAZYREMOVE(idle_mobs_on_old_z, src)
 		toggle_ai(initial(AIStatus))
 
