@@ -91,7 +91,7 @@ STATUS EFFECTS
 
 	if(stat == DEAD && !work_when_dead)
 		return
-	if(!instant && !do_mob(src, src, 1 SECONDS, extra_checks = list(CALLBACK(src, TYPE_PROC_REF(/mob/living, cannot_stand))), only_use_extra_checks = TRUE))
+	if(!instant && !do_mob(src, src, 1 SECONDS, extra_checks = list(CALLBACK(src, TYPE_PROC_REF(/mob/living, cannot_stand))), only_use_extra_checks = TRUE, hidden = TRUE))
 		return
 	if(resting || body_position == STANDING_UP || HAS_TRAIT(src, TRAIT_FLOORED))
 		return
@@ -809,7 +809,9 @@ STATUS EFFECTS
 // Deaf
 /mob/living/proc/CureDeaf()
 	CureIfHasDisability(GLOB.deafblock)
-
+// Paraplegia
+/mob/living/proc/CureParaplegia()
+	CureIfHasDisability(GLOB.paraplegicblock)
 // Epilepsy
 /mob/living/proc/CureEpilepsy()
 	CureIfHasDisability(GLOB.epilepsyblock)
@@ -836,10 +838,6 @@ STATUS EFFECTS
 // Nervous
 /mob/living/proc/CureNervous()
 	CureIfHasDisability(GLOB.nervousblock)
-
-// Tourettes
-/mob/living/proc/CureTourettes()
-	CureIfHasDisability(GLOB.twitchblock)
 
 /mob/living/proc/CureIfHasDisability(block)
 	if(dna && dna.GetSEState(block))

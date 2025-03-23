@@ -118,6 +118,14 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/newplayer_start) //Without this you sp
 	name = "bubblegum_arena_exit"
 	icon_state = "bubblegumjumpscare"
 
+/obj/effect/landmark/spawner/backrooms
+	name = "backrooms_spawn"
+	icon_state = "Assistant"
+
+/obj/effect/landmark/spawner/backrooms/Initialize(mapload)
+	spawner_list = GLOB.backroomswarp
+	return ..()
+
 /obj/effect/landmark/spawner/syndie
 	name = "Syndicate-Spawn"
 	icon_state = "Syndie"
@@ -308,6 +316,10 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/newplayer_start) //Without this you sp
 
 /obj/effect/landmark/start/cargo_technician
 	name = "Cargo Technician"
+	icon_state = "CargoTech"
+
+/obj/effect/landmark/start/smith
+	name = "Smith"
 	icon_state = "CargoTech"
 
 /obj/effect/landmark/start/chaplain

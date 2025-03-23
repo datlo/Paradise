@@ -37,7 +37,7 @@
 	if(by_hand)
 		for(var/obj/O in src)
 			if(O.density)
-				var/response = tgui_alert(usr, "This crate has been packed with bluespace compression, an item inside won't fit back inside. Are you sure you want to open it?", "Bluespace Compression Warning", list("Yes", "No"))
+				var/response = tgui_alert(usr, "This crate has been packed extremely tightly, an item inside won't fit back inside. Are you sure you want to open it?", "Compressed Materials Warning", list("Yes", "No"))
 				if(response != "Yes" || !Adjacent(usr))
 					return FALSE
 				break
@@ -383,6 +383,13 @@
 	var/target_temp = T0C - 40
 	var/cooling_power = 40
 
+/obj/structure/closet/crate/freezer/deluxe
+	name = "Deluxe Freezer"
+	desc = "A fancy looking freezer emblazoned with the Nanotrasen logo."
+	icon_state = "freezerdeluxe"
+	icon_opened = "freezerdeluxe_open"
+	icon_closed = "freezerdeluxe"
+
 /obj/structure/closet/crate/freezer/return_obj_air()
 	RETURN_TYPE(/datum/gas_mixture)
 	var/datum/gas_mixture/gas = ..()
@@ -581,6 +588,34 @@
 /obj/structure/closet/crate/tape/populate_contents()
 	if(prob(10))
 		new /obj/item/bikehorn/rubberducky(src)
+
+/obj/structure/closet/crate/cookware
+	name = "cookware crate"
+	icon_state = "cookware"
+	icon_opened = "cookware_open"
+	icon_closed = "cookware"
+
+/obj/structure/closet/crate/cookware/populate_contents()
+	// Ice cream mixer containers
+	new /obj/item/reagent_containers/cooking/icecream_bowl(src)
+	// Oven containers
+	new /obj/item/reagent_containers/cooking/oven(src)
+	// Stovetop containers
+	new /obj/item/reagent_containers/cooking/pan(src)
+	new /obj/item/reagent_containers/cooking/pan(src)
+	new /obj/item/reagent_containers/cooking/pot(src)
+	new /obj/item/reagent_containers/cooking/pot(src)
+	// Deepfryer containers
+	new /obj/item/reagent_containers/cooking/deep_basket(src)
+	new /obj/item/reagent_containers/cooking/deep_basket(src)
+	// Cutting board
+	new /obj/item/reagent_containers/cooking/board(src)
+	// Grill containers
+	new /obj/item/reagent_containers/cooking/grill_grate(src)
+	new /obj/item/reagent_containers/cooking/grill_grate(src)
+	// Prep bowls
+	new /obj/item/reagent_containers/cooking/bowl(src)
+	new /obj/item/reagent_containers/cooking/bowl(src)
 
 //crates of gear in the free golem ship
 /obj/structure/closet/crate/golemgear/populate_contents()

@@ -2,9 +2,10 @@ RESTRICT_TYPE(/datum/antagonist/vampire)
 
 /datum/antagonist/vampire
 	name = "Vampire"
+	job_rank = ROLE_VAMPIRE
+	special_role = SPECIAL_ROLE_VAMPIRE
 	antag_hud_type = ANTAG_HUD_VAMPIRE
 	antag_hud_name = "hudvampire"
-	special_role = SPECIAL_ROLE_VAMPIRE
 	wiki_page_name = "Vampire"
 	var/bloodtotal = 0
 	var/bloodusable = 0
@@ -112,7 +113,7 @@ RESTRICT_TYPE(/datum/antagonist/vampire)
 		H.LAssailant = null
 	else
 		H.LAssailant = owner
-	while(do_mob(owner.current, H, suck_rate))
+	while(do_mob(owner.current, H, suck_rate, hidden = TRUE))
 		owner.current.do_attack_animation(H, ATTACK_EFFECT_BITE)
 		if(unique_suck_id in drained_humans)
 			if(drained_humans[unique_suck_id] >= BLOOD_DRAIN_LIMIT)

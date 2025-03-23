@@ -126,7 +126,7 @@
 /datum/module_picker/Topic(href, href_list)
 	..()
 
-	if(!isAI(usr))
+	if(!is_ai(usr))
 		return
 	var/mob/living/silicon/ai/A = usr
 
@@ -573,8 +573,8 @@
 		var/turf/T = turfs[n]
 		if(!isfloorturf(T))
 			success = FALSE
-		var/datum/camerachunk/C = GLOB.cameranet.getCameraChunk(T.x, T.y, T.z)
-		if(!C.visibleTurfs[T])
+		var/datum/camerachunk/C = GLOB.cameranet.get_camera_chunk(T.x, T.y, T.z)
+		if(!C.visible_turfs[T])
 			alert_msg = "You don't have camera vision of this location!"
 			success = FALSE
 		for(var/atom/movable/AM in T.contents)
@@ -673,12 +673,12 @@
 	I.loc = deploylocation
 	client.images += I
 	I.icon_state = "redOverlay"
-	var/datum/camerachunk/C = GLOB.cameranet.getCameraChunk(deploylocation.x, deploylocation.y, deploylocation.z)
+	var/datum/camerachunk/C = GLOB.cameranet.get_camera_chunk(deploylocation.x, deploylocation.y, deploylocation.z)
 
 	if(!istype(deploylocation))
 		to_chat(src, "<span class='warning'>There isn't enough room! Make sure you are placing the machine in a clear area and on a floor.</span>")
 		return FALSE
-	if(!C.visibleTurfs[deploylocation])
+	if(!C.visible_turfs[deploylocation])
 		to_chat(src, "<span class='warning'>You don't have camera vision of this location!</span>")
 		addtimer(CALLBACK(src, PROC_REF(remove_transformer_image), client, I, deploylocation), 3 SECONDS)
 		return FALSE
@@ -865,7 +865,7 @@
 	user.playsound_local(user, "sparks", 50, FALSE, use_reverb = FALSE)
 	adjust_uses(-1, user)
 	robot_target.audible_message("<span class='italics'>You hear a loud electrical buzzing sound coming from [robot_target]!</span>")
-	if(!do_mob(user, robot_target, 10 SECONDS))
+	if(!do_mob(user, robot_target, 10 SECONDS, hidden = TRUE))
 		is_active = FALSE
 		return
 	is_active = FALSE

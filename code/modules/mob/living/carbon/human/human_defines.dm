@@ -10,7 +10,8 @@
 	hud_possible = list(
 		HEALTH_HUD, STATUS_HUD, SPECIALROLE_HUD, // from /mob/living
 		ID_HUD, WANTED_HUD, IMPMINDSHIELD_HUD, IMPCHEM_HUD, IMPTRACK_HUD, GLAND_HUD,
-		DIAG_STAT_HUD, DIAG_HUD // for IPCs
+		DIAG_STAT_HUD, DIAG_HUD, // for IPCs
+		MALF_AI_HUD
 	)
 	pressure_resistance = 25
 	mob_biotypes = MOB_ORGANIC | MOB_HUMANOID
@@ -20,6 +21,8 @@
 	var/list/m_styles = DEFAULT_MARKING_STYLES //All markings set to None.
 
 	var/s_tone = 0	//Skin tone
+	/// Species Sub-Type - overrites the species_sheet_name when it's not "None", acts the same as a skin tone.
+	var/species_subtype = "None"
 
 	//Skin colour
 	var/skin_colour = "#000000"
@@ -107,3 +110,6 @@
 
 	/// Lazylist of sources to track what our alpha should be, alpha is set to the minimum. Use the `set_alpha_tracking` and `get_alpha` helpers.
 	var/list/alpha_sources
+
+/mob/living/carbon/human/fake
+	flags = ABSTRACT

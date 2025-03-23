@@ -159,9 +159,9 @@ GLOBAL_LIST_EMPTY(telecomms_trap_tank)
 	new /obj/item/documents/syndicate/dvorak_blackbox(get_turf(src))
 	if(prob(50))
 		if(prob(80))
-			new /obj/item/surveillance_upgrade(get_turf(src))
+			new /obj/item/ai_upgrade/surveillance_upgrade(get_turf(src))
 		else // 10% chance
-			new /obj/item/malf_upgrade(get_turf(src))
+			new /obj/item/ai_upgrade/malf_upgrade(get_turf(src))
 	return ..()
 
 /obj/structure/telecomms_trap_tank
@@ -169,6 +169,7 @@ GLOBAL_LIST_EMPTY(telecomms_trap_tank)
 	desc = "That plasma tank seems rigged to explode!"
 	icon = 'icons/atmos/tank.dmi'
 	icon_state = "toxins_map"
+	proj_ignores_layer = TRUE
 	anchored = TRUE
 	layer = DISPOSAL_PIPE_LAYER
 	plane = FLOOR_PLANE
@@ -388,7 +389,7 @@ GLOBAL_LIST_EMPTY(telecomms_trap_tank)
 
 /obj/item/remote_ai_upload // A 1 use AI upload. Potential D.V.O.R.A.K reward.
 	name = "remote AI upload"
-	desc = "A mobile AI upload. The bluespace relay will likely overload after one use. Make it count."
+	desc = "A mobile AI upload. The transmitter is extremely powerful, but will burn out after one use. Make it count."
 	icon = 'icons/obj/device.dmi'
 	icon_state = "dvorak_upload"
 	w_class = WEIGHT_CLASS_TINY

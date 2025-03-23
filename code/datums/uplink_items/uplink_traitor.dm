@@ -218,7 +218,7 @@
 	name = "Power Bio-Chip"
 	desc = "A Bio-Chip that can utilize the power of the station to deliver a short arc of electricity at a target. \
 			Must be standing on a powered cable to use. \
-			Activated by alt-clicking, or pressing the middle mouse button. Disarm intent will deal stamina damage and cause jittering, while harm intent will deal damage based on the power of the cable you're standing on. Can be toggled on / off via the action button."
+			Activated by alt-clicking, or pressing the middle mouse button. Help/disarm intent will deal stamina damage and cause jittering, while harm/grab intent will deal damage based on the power of the cable you're standing on. Can be toggled on / off via the action button."
 	reference = "PG"
 	item = /obj/item/bio_chip_implanter/shock
 	cost = 50
@@ -228,11 +228,13 @@
 
 /datum/uplink_item/jobspecific/telegun
 	name = "Telegun"
-	desc = "An extremely high-tech energy gun that utilizes bluespace technology to teleport away living targets. Select the target beacon on the telegun itself; projectiles will send targets to the beacon locked onto. Can only send targets to beacons in-sector unless they are emagged!"
+	desc = "An extremely high-tech energy gun that utilizes jury-rigged bluespace technology to teleport away living targets. Select the target beacon on the telegun itself; projectiles will send targets to the beacon locked onto. Can only send targets to beacons in-sector unless they are emagged!"
 	reference = "TG"
 	item = /obj/item/gun/energy/telegun
 	cost = 50
-	job = list("Research Director")
+	job = list("Scientist")
+	hijack_only = TRUE
+	surplus = 0
 
 //Roboticist
 /datum/uplink_item/jobspecific/syndiemmi
@@ -273,6 +275,15 @@
 	item = /obj/item/clothing/under/rank/engineering/atmospheric_technician/contortionist
 	cost = 30
 	job = list("Life Support Specialist")
+
+/datum/uplink_item/jobspecific/contortionist_plasmaman
+	name = "Contortionist's Plasma Envirosuit"
+	desc = "A highly flexible envirosuit that will help you navigate the ventilation loops of the station internally, specialized for Plasmamen. Comes with pockets and ID slot, but can't be used without stripping off most gear, including backpack, belt, and exosuit. Free hands are also necessary to crawl around inside."
+	reference = "AIRJP"
+	item = /obj/item/clothing/under/plasmaman/atmospherics/contortionist
+	cost = 30
+	job = list("Life Support Specialist")
+	species = list("Plasmaman")
 
 /datum/uplink_item/jobspecific/energizedfireaxe
 	name = "Energized Fire Axe"
